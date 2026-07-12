@@ -1,12 +1,11 @@
 #!/bin/bash
 
-echo "🔥 PAWS IMMORTAL (NO-LOGS) STARTED"
+echo "🔥 PAWS IMMORTAL STARTED"
 
-# Jalankan semua di background, output ke stdout
+# Jalankan immortal.sh dari /usr/local/bin/
 /usr/local/bin/immortal.sh &
 python3 /usr/local/bin/relogin.py &
 
-# Keep alive
 while true; do
     sleep 60
 done
