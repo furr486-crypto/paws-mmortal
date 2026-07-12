@@ -1,22 +1,18 @@
-FROM alpine:latest
+#!/bin/bash
 
-# Install dependensi sistem dan Python dalam satu lapisan
-RUN apk add --no-cache bash curl python3 py3-pip jq
+CONFIG="/etc/immortal/config.yml"
+PAWS_URL=$(cat $CONFIG | grep "lab_url" | cut -d: -f2- | tr -d ' "')
 
-# Install paket Python dengan force (solusi untuk error externally-managed)
-RUN pip3 install requests pyyaml flask --break-system-packages
+echo "[$(date)] 🔥 KEEP-ALIVE ACTIVE"
 
-# Salin semua file skrip dan konfigurasi
-COPY *.sh /usr/local/bin/
-COPY *.py /usr/local/bin/
-COPY config.yml /etc/immortal/config.yml
-
-# Beri izin eksekusi pada semua skrip shell
-RUN chmod +x /usr/local/bin/*.sh
-
-# Salin dan atur entrypoint utama
-COPY entrypoint.sh /entrypoint.sh
-RUN chmod +x /entrypoint.sh
-
-# Tentukan entrypoint
-ENTRYPOINT ["/entrypoint.sh"]
+while true; do
+    STATUS=$(curl -s -o /dev/null -w "%{http_code}" "$PAWS_URL" 2>/dev/null)
+    echo "[$(date)] Status: $STATUS"
+    
+    if [ "$STATUS" = "302" ] || [ "$STATUS" = "403" ]; then
+        echo "[$(date)] ⚠️ Session expired — relogin..."
+        python3 /usr/local/bin/relogin.py
+    fi
+    
+    sleep 180
+done
