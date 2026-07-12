@@ -3,6 +3,7 @@
 import requests
 import yaml
 import re
+import time
 
 def load_config():
     with open('/etc/immortal/config.yml', 'r') as f:
@@ -28,13 +29,13 @@ def relogin():
         resp = session.post(f"{base_url}/hub/login", data=data)
         
         if resp.status_code == 200 and "lab" in resp.url:
-            print(f"[{__import__('time').ctime()}] ✅ Login success")
+            print(f"[{time.ctime()}] ✅ Login success")
             return True
         else:
-            print(f"[{__import__('time').ctime()}] ❌ Login failed")
+            print(f"[{time.ctime()}] ❌ Login failed")
             return False
     except Exception as e:
-        print(f"[{__import__('time').ctime()}] ❌ Error: {e}")
+        print(f"[{time.ctime()}] ❌ Error: {e}")
         return False
 
 if __name__ == "__main__":
